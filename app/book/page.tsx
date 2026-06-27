@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import BookingForm from "@/components/BookingForm";
@@ -48,7 +49,9 @@ export default function BookPage() {
             </div>
 
             <div className="lg:col-span-3">
-              <BookingForm />
+              <Suspense fallback={<div className="p-8 text-center text-white/50">Loading booking form...</div>}>
+                <BookingForm />
+              </Suspense>
             </div>
           </div>
         </div>

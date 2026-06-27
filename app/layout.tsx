@@ -26,6 +26,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://colonialinn.example.com"),
   title: "Colonial Inn — Downtown Cebu City, Philippines",
   description: "Experience Cebu's heritage charm. Centrally located at Colon & Borromeo Streets, walking distance to Magellan's Cross and Basilica del Santo Niño.",
   openGraph: {
