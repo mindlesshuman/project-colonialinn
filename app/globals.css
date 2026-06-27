@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Colors */
+  --color-primary: #3D2314;
+  --color-primary-light: #5C3520;
+  --color-accent: #C9A84C;
+  --color-accent-light: #E2C47A;
+  --color-burgundy: #7B2D42;
+  --color-cream: #F5EDD8;
+  --color-off-white: #FAF6EE;
+  --color-charcoal: #1E1714;
+  --color-gray: #6B6560;
+  --color-gray-light: #D4CFC9;
+  --color-footer-bg: #1C1410;
+
+  /* Backgrounds & Foreground mappings */
+  --color-background: var(--color-off-white);
+  --color-foreground: var(--color-charcoal);
+
+  /* Fonts */
+  --font-heading: var(--font-baskervville);
+  --font-body: var(--font-open-sans);
+  --font-label: var(--font-montserrat);
+
+  /* Transitions */
+  --transition-base: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-slow: 0.75s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Custom CSS utilities for things Tailwind doesn't handle cleanly by default */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+  
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .label-text {
+    @apply font-label text-[0.7rem] font-semibold tracking-[0.25em] uppercase text-accent;
+  }
+
+  .section-divider {
+    @apply w-[50px] h-[1px] bg-accent my-5;
+  }
+  
+  .section-divider.center {
+    @apply mx-auto;
+  }
+
+  /* Shared Button Base */
+  .btn {
+    @apply inline-flex items-center gap-2 font-label text-[0.72rem] font-semibold tracking-[0.18em] uppercase py-[14px] px-[36px] relative overflow-hidden transition-all duration-[0.35s];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-outline {
+    @apply border-[1.5px] border-current text-primary bg-transparent;
+  }
+  .btn-outline::before {
+    content: '';
+    @apply absolute inset-0 bg-primary origin-left scale-x-0 z-0 transition-transform duration-[0.35s];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .btn-outline span { @apply relative z-10; }
+  .btn-outline:hover { @apply text-white border-primary; }
+  .btn-outline:hover::before { @apply scale-x-100; }
+
+  .btn-outline-white {
+    @apply border-[1.5px] border-white/70 text-white bg-transparent;
+  }
+  .btn-outline-white::before {
+    content: '';
+    @apply absolute inset-0 bg-white/15 origin-left scale-x-0 z-0 transition-transform duration-[0.35s];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .btn-outline-white span { @apply relative z-10; }
+  .btn-outline-white:hover::before { @apply scale-x-100; }
+
+  .btn-gold {
+    @apply bg-accent text-primary border-[1.5px] border-accent;
+  }
+  .btn-gold::before {
+    content: '';
+    @apply absolute inset-0 bg-accent-light origin-left scale-x-0 z-0 transition-transform duration-[0.35s];
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .btn-gold span { @apply relative z-10; }
+  .btn-gold:hover::before { @apply scale-x-100; }
+}
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+}
