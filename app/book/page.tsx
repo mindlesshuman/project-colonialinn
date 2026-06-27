@@ -25,24 +25,26 @@ export default function BookPage() {
                   Fill out the form with your travel dates and details. Our reservations team will check availability and get back to you within 2–4 hours with confirmation and payment instructions.
                 </p>
 
-                <h3 className="font-label text-[0.68rem] font-bold tracking-[0.2em] uppercase text-accent mb-4 mt-8 pt-6 border-t border-white/10">
-                  Direct Contact
-                </h3>
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
-                    <i className="fa-solid fa-phone mt-1 w-4 text-accent"></i>
-                    <div>
-                      <a href="tel:+63322536006" className="transition-colors hover:text-white block">+63 32 253 6006</a>
-                      <a href="tel:+639171234567" className="transition-colors hover:text-white block">+63 917 123 4567</a>
+                <div className="bg-[#241A15] p-6 lg:p-8 border border-white/5 shadow-2xl mt-8">
+                  <h3 className="font-label text-[0.68rem] font-bold tracking-[0.2em] uppercase text-accent mb-5">
+                    Direct Contact
+                  </h3>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
+                      <i className="fa-solid fa-phone mt-1 w-4 text-accent"></i>
+                      <div>
+                        <a href="tel:+63322536006" className="transition-colors hover:text-white block">+63 32 253 6006</a>
+                        <a href="tel:+639171234567" className="transition-colors hover:text-white block">+63 917 123 4567</a>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
-                    <i className="fa-solid fa-envelope mt-1 w-4 text-accent"></i>
-                    <a href="mailto:colonialinn@cebu.ph" className="transition-colors hover:text-white block">colonialinn@cebu.ph</a>
-                  </div>
-                  <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
-                    <i className="fa-brands fa-facebook-messenger mt-1 w-4 text-accent"></i>
-                    <a href="#" className="transition-colors hover:text-white block">m.me/colonialinncebu</a>
+                    <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
+                      <i className="fa-solid fa-envelope mt-1 w-4 text-accent"></i>
+                      <a href="mailto:colonialinn@cebu.ph" className="transition-colors hover:text-white block">colonialinn@cebu.ph</a>
+                    </div>
+                    <div className="flex items-start gap-3 text-[0.85rem] text-white/70">
+                      <i className="fa-brands fa-facebook-messenger mt-1 w-4 text-accent"></i>
+                      <a href="#" className="transition-colors hover:text-white block">m.me/colonialinncebu</a>
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>
