@@ -14,6 +14,8 @@ export default function BookingForm() {
     phone: "",
     checkin: "",
     checkout: "",
+    checkinTime: "14:00",
+    checkoutTime: "12:00",
     room: "",
     guests: "2",
     message: ""
@@ -38,10 +40,15 @@ export default function BookingForm() {
     const paramRoom = searchParams.get("room");
     const paramGuests = searchParams.get("guests");
 
+    const paramCheckinTime = searchParams.get("checkinTime");
+    const paramCheckoutTime = searchParams.get("checkoutTime");
+
     setFormData(prev => ({
       ...prev,
       checkin: paramCheckin || today,
       checkout: paramCheckout || tomorrow,
+      checkinTime: paramCheckinTime || "14:00",
+      checkoutTime: paramCheckoutTime || "12:00",
       room: paramRoom || "",
       guests: paramGuests || "2"
     }));
@@ -218,6 +225,31 @@ export default function BookingForm() {
               className={`w-full p-[14px_16px] border ${errors.checkout ? "border-[#c0392b]" : "border-gray-light"} rounded-none font-body text-[0.9rem] text-primary bg-off-white outline-none transition-colors duration-[0.35s] focus:border-accent appearance-none`}
             />
             {errors.checkout && <span className="block text-[0.72rem] text-[#c0392b] mt-1.5 font-label tracking-[0.05em]">{errors.checkout}</span>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5.5">
+          <div className="form-group">
+            <label htmlFor="form-checkin-time" className="block font-label text-[0.62rem] font-bold tracking-[0.2em] uppercase text-gray mb-2">Estimated Check-In Time</label>
+            <input
+              type="time"
+              id="form-checkin-time"
+              name="checkinTime"
+              value={formData.checkinTime}
+              onChange={handleChange}
+              className="w-full p-[14px_16px] border border-gray-light rounded-none font-body text-[0.9rem] text-primary bg-off-white outline-none transition-colors duration-[0.35s] focus:border-accent appearance-none"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="form-checkout-time" className="block font-label text-[0.62rem] font-bold tracking-[0.2em] uppercase text-gray mb-2">Estimated Check-Out Time</label>
+            <input
+              type="time"
+              id="form-checkout-time"
+              name="checkoutTime"
+              value={formData.checkoutTime}
+              onChange={handleChange}
+              className="w-full p-[14px_16px] border border-gray-light rounded-none font-body text-[0.9rem] text-primary bg-off-white outline-none transition-colors duration-[0.35s] focus:border-accent appearance-none"
+            />
           </div>
         </div>
 
