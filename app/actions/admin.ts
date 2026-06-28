@@ -2,7 +2,8 @@
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { sendConfirmationEmail, sendUnavailableEmail } from '@/lib/email';
+import { sendConfirmationEmail, sendUnavailableEmail, sendAvailableEmail } from '@/lib/email';
+import { headers } from 'next/headers';
 
 export async function updateReservationStatus(id: string, newStatus: string) {
   try {
@@ -35,6 +36,25 @@ export async function updateReservationStatus(id: string, newStatus: string) {
         checkOutTime: reservation.checkOutTime,
         roomType: reservation.roomType,
         guests: reservation.guests,
+      });
+    } else if (newStatus === 'available') {
+      const headersList = await headers();
+      const host = headersList.get('host') || 'localhost:3000';
+      const protocol = headersList.get('x-forwarded-proto') || 'http';
+      const baseUrl = `${protocol}://${host}`;
+
+      await sendAvailableEmail({
+        to: reservation.email,
+        firstName: reservation.firstName,
+        lastName: reservation.lastName,
+        checkInDate: reservation.checkInDate,
+        checkInTime: reservation.checkInTime,
+        checkOutDate: reservation.checkOutDate,
+        checkOutTime: reservation.checkOutTime,
+        roomType: reservation.roomType,
+        guests: reservation.guests,
+        id: reservation.id,
+        baseUrl,
       });
     }
 

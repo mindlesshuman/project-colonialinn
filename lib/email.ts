@@ -235,3 +235,82 @@ export async function sendUnavailableEmail(params: SendConfirmationParams) {
     return false;
   }
 }
+
+export async function sendAvailableEmail(params: SendConfirmationParams & { id: string; baseUrl: string }) {
+  const { EMAIL_USER, EMAIL_PASS } = process.env;
+
+  if (!EMAIL_USER || !EMAIL_PASS) {
+    return false;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
+      },
+    });
+
+    const confirmUrl = `${params.baseUrl}/confirm?id=${params.id}`;
+
+    const htmlTemplate = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+        <div style="background-color: #241A15; padding: 30px; text-align: center;">
+          <h1 style="color: #F8F5F2; margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">Colonial Inn</h1>
+        </div>
+        
+        <div style="padding: 30px; background-color: #ffffff;">
+          <h2 style="color: #241A15; margin-top: 0;">Your Room is Available!</h2>
+          <p style="color: #555555; line-height: 1.6;">
+            Dear ${params.firstName} ${params.lastName},
+          </p>
+          <p style="color: #555555; line-height: 1.6;">
+            Great news! We have reviewed your inquiry and the <strong>${params.roomType}</strong> room you requested is available for your chosen dates.
+          </p>
+          
+          <div style="background-color: #F8F5F2; padding: 20px; border-radius: 5px; margin: 25px 0;">
+            <h3 style="margin-top: 0; color: #241A15; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Stay Details</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; color: #444;">
+              <li style="margin-bottom: 10px;"><strong>Check-in:</strong> ${params.checkInDate} at ${formatTime12h(params.checkInTime)}</li>
+              <li style="margin-bottom: 10px;"><strong>Check-out:</strong> ${params.checkOutDate} at ${formatTime12h(params.checkOutTime)}</li>
+              <li style="margin-bottom: 10px;"><strong>Room:</strong> <span style="text-transform: capitalize;">${params.roomType}</span> Room</li>
+              <li><strong>Guests:</strong> ${params.guests}</li>
+            </ul>
+          </div>
+          
+          <p style="color: #555555; line-height: 1.6; font-weight: bold;">
+            To finalize your booking, please click the button below to confirm your reservation.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${confirmUrl}" style="background-color: #C19B76; color: #241A15; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Confirm Reservation</a>
+          </div>
+          
+          <p style="color: #555555; line-height: 1.6; margin-bottom: 0;">
+            Warmest regards,<br>
+            <strong>Management & Staff</strong><br>
+            Colonial Inn
+          </p>
+        </div>
+        
+        <div style="background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #888;">
+          Colonial Inn, Cebu City, Philippines<br>
+          This is an automated message.
+        </div>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: `"Colonial Inn" <${EMAIL_USER}>`,
+      to: params.to,
+      subject: 'Room Available - Please Confirm Your Reservation',
+      html: htmlTemplate,
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Error sending available email:', error);
+    return false;
+  }
+}

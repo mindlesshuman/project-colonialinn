@@ -120,10 +120,11 @@ export default async function AdminDashboard() {
                       <td className="p-5 align-top">
                         <span className={`px-3 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border ${
                           res.status === 'confirmed' ? 'bg-[#27ae60]/10 text-[#27ae60] border-[#27ae60]/20' :
+                          res.status === 'available' ? 'bg-[#f39c12]/10 text-[#f39c12] border-[#f39c12]/20' :
                           res.status === 'cancelled' ? 'bg-[#c0392b]/10 text-[#c0392b] border-[#c0392b]/20' :
                           'bg-cream text-accent border-accent/20'
                         }`}>
-                          {res.status === 'confirmed' ? 'Available' : res.status === 'cancelled' ? 'Unavailable' : res.status}
+                          {res.status === 'confirmed' ? 'Confirmed' : res.status === 'available' ? 'Awaiting Guest' : res.status === 'cancelled' ? 'Unavailable' : res.status}
                         </span>
                         
                         <ReservationActions id={res.id} status={res.status} />

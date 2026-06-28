@@ -31,9 +31,9 @@ export default function ReservationActions({ id, status, role = 'admin' }: Reser
       {status === 'pending' && (
         <div className="flex gap-2">
           <button 
-            onClick={() => handleStatusChange('confirmed')}
+            onClick={() => handleStatusChange('available')}
             disabled={isPending}
-            className="bg-[#27ae60] text-white text-[0.6rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="bg-[#f39c12] text-white text-[0.6rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
             title="Mark Room as Available & Send Email"
           >
             <i className="fa-solid fa-check"></i> Available
@@ -49,7 +49,7 @@ export default function ReservationActions({ id, status, role = 'admin' }: Reser
         </div>
       )}
       
-      {status !== 'pending' && (
+      {(status !== 'pending' && status !== 'available') && (
         <div className="flex gap-2">
           <button 
             onClick={() => handleStatusChange('pending')}
