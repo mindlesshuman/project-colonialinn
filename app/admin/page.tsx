@@ -3,6 +3,7 @@ import Link from 'next/link';
 import PrintButton from '@/components/PrintButton';
 import LogoutButton from '@/components/LogoutButton';
 import ReservationActions from '@/components/ReservationActions';
+import AutoRefresh from '@/components/AutoRefresh';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -51,6 +52,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-off-white pt-[140px] pb-12 px-6">
+      <AutoRefresh interval={15000} />
       <div className="max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center mb-10">
           <div>
