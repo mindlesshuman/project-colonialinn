@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Reservation {
+  id           String   @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  checkInDate  String
+  checkInTime  String
+  checkOutDate String
+  checkOutTime String
+  roomType     String
+  guests       Int
+  message      String?
+  status       String   @default("pending") // pending, confirmed, cancelled
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

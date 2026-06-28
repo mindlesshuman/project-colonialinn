@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ScrollReveal from "./ScrollReveal";
+import { submitReservation } from "@/app/actions/book";
 
 export default function BookingForm() {
   const searchParams = useSearchParams();
@@ -86,7 +87,7 @@ export default function BookingForm() {
     validateField(e.target.name, e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     let isValid = true;
@@ -100,30 +101,71 @@ export default function BookingForm() {
     if (!isValid) return;
 
     setIsSubmitting(true);
+    setErrors(prev => ({ ...prev, submit: "" }));
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        data.append(key, value as string);
+      });
+
+      const result = await submitReservation(data);
+
       setIsSubmitting(false);
-      setIsSuccess(true);
-      setFormData(prev => ({
-        ...prev,
-        firstname: "",
-        lastname: "",
-        email: "",
-        phone: "",
-        message: ""
-      }));
-      
-      // Auto-hide success message after 6s
-      setTimeout(() => setIsSuccess(false), 6000);
-    }, 1200);
+
+      if (result.success) {
+        setIsSuccess(true);
+        setFormData(prev => ({
+          ...prev,
+          firstname: "",
+          lastname: "",
+          email: "",
+          phone: "",
+          message: ""
+        }));
+        
+        // Auto-hide success message after 6s
+        setTimeout(() => setIsSuccess(false), 6000);
+      } else {
+        setErrors(prev => ({ ...prev, submit: result.error || "Failed to submit." }));
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setErrors(prev => ({ ...prev, submit: "An unexpected error occurred." }));
+    }
   };
 
   return (
     <ScrollReveal delay={0.2} className="bg-white p-8 md:p-[50px] shadow-[0_8px_60px_rgba(0,0,0,0.07)] relative">
       {isSuccess && (
-        <div className="bg-gradient-to-br from-accent to-accent-light text-primary p-[20px_28px] mb-6 font-label text-[0.75rem] font-bold tracking-[0.1em] uppercase" role="alert">
-          ✓ Your reservation inquiry has been sent! We&apos;ll confirm within 2–4 hours.
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white p-10 max-w-[500px] shadow-2xl text-center border-t-4 border-accent relative transform transition-all">
+            <button 
+              onClick={() => setIsSuccess(false)}
+              className="absolute top-4 right-4 text-gray hover:text-primary transition-colors"
+              title="Close"
+            >
+              <i className="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div className="w-16 h-16 bg-accent/10 text-accent rounded-full flex items-center justify-center mx-auto mb-6">
+              <i className="fa-solid fa-paper-plane text-2xl"></i>
+            </div>
+            <h3 className="font-heading text-[1.8rem] text-primary mb-3">Inquiry Received!</h3>
+            <p className="font-body text-gray text-[0.9rem] leading-relaxed mb-8">
+              Thank you for inquiring! Please wait for our staff to check if the room is available. We'll send a confirmation email to you within the day.
+            </p>
+            <button 
+              onClick={() => setIsSuccess(false)}
+              className="btn btn-gold bg-primary text-white w-full justify-center hover:bg-charcoal"
+            >
+              <span>Okay</span>
+            </button>
+          </div>
+        </div>
+      )}
+      {errors.submit && (
+        <div className="bg-red-100 text-red-800 p-[20px_28px] mb-6 font-label text-[0.75rem] font-bold tracking-[0.1em] uppercase" role="alert">
+          ✗ {errors.submit}
         </div>
       )}
 
