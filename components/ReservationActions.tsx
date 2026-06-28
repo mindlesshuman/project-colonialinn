@@ -66,19 +66,6 @@ export default function ReservationActions({ id, status, role = 'admin' }: Reser
       {role === 'manager' && (
         <div className="flex gap-2 flex-wrap border-t border-gray-light pt-2 mt-1">
           <button 
-            onClick={() => {
-              if (confirm('Are you sure you want to force cancel this reservation? A cancellation email will be sent to the guest.')) {
-                handleStatusChange('cancelled');
-              }
-            }}
-            disabled={isPending}
-            className="bg-[#c0392b] text-white text-[0.6rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
-            title="Force Cancel Reservation"
-          >
-            <i className="fa-solid fa-ban"></i> Force Cancel
-          </button>
-
-          <button 
             onClick={handleDelete}
             disabled={isPending}
             className="bg-primary text-white text-[0.6rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
