@@ -4,10 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL="postgresql://postgres.sagsmsauzpuncvvvhcui:c1iEVFtL8zBldqYR@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true"")
-  directUrl = env("DIRECT_URL="postgresql://postgres.sagsmsauzpuncvvvhcui:c1iEVFtL8zBldqYR@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"")
-
-  
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Reservation {
