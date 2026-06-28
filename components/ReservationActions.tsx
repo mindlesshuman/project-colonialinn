@@ -49,8 +49,8 @@ export default function ReservationActions({ id, status, role = 'admin' }: Reser
         </div>
       )}
       
-      {(status !== 'pending' && status !== 'available') && (
-        <div className="flex gap-2">
+      {status !== 'pending' && (
+        <div className="flex gap-2 flex-wrap">
           <button 
             onClick={() => handleStatusChange('pending')}
             disabled={isPending}
@@ -59,6 +59,22 @@ export default function ReservationActions({ id, status, role = 'admin' }: Reser
           >
             <i className="fa-solid fa-rotate-left"></i>
           </button>
+
+          {role === 'manager' && status !== 'cancelled' && (
+            <button 
+              onClick={() => {
+                if (confirm('Are you sure you want to force cancel this reservation? A cancellation email will be sent to the guest.')) {
+                  handleStatusChange('cancelled');
+                }
+              }}
+              disabled={isPending}
+              className="bg-[#c0392b] text-white text-[0.6rem] font-bold uppercase tracking-wider px-3 py-1.5 rounded-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+              title="Force Cancel Reservation"
+            >
+              <i className="fa-solid fa-ban"></i> Force Cancel
+            </button>
+          )}
+
           {role === 'manager' && (
             <button 
               onClick={handleDelete}
