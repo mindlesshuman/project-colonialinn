@@ -5,9 +5,20 @@ interface SendConfirmationParams {
   firstName: string;
   lastName: string;
   checkInDate: string;
+  checkInTime: string;
   checkOutDate: string;
+  checkOutTime: string;
   roomType: string;
   guests: number;
+}
+
+function formatTime12h(time24: string) {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':');
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${minutes} ${ampm}`;
 }
 
 export async function sendConfirmationEmail(params: SendConfirmationParams) {
@@ -39,26 +50,30 @@ export async function sendConfirmationEmail(params: SendConfirmationParams) {
             Dear ${params.firstName} ${params.lastName},
           </p>
           <p style="color: #555555; line-height: 1.6;">
-            We are thrilled to confirm your reservation at Colonial Inn. We are looking forward to hosting you in Cebu!
+            Thank you for choosing Colonial Inn for your upcoming visit to Cebu. We are delighted to officially confirm your reservation and express our sincere gratitude for your patronage.
+          </p>
+          <p style="color: #555555; line-height: 1.6;">
+            Our dedicated staff is committed to providing you with exceptional service, a comfortable atmosphere, and true Philippine hospitality. We eagerly await your arrival.
           </p>
           
           <div style="background-color: #F8F5F2; padding: 20px; border-radius: 5px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #241A15; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Stay Details</h3>
             <ul style="list-style: none; padding: 0; margin: 0; color: #444;">
-              <li style="margin-bottom: 10px;"><strong>Check-in:</strong> ${params.checkInDate} (After 2:00 PM)</li>
-              <li style="margin-bottom: 10px;"><strong>Check-out:</strong> ${params.checkOutDate} (Before 12:00 PM)</li>
+              <li style="margin-bottom: 10px;"><strong>Check-in:</strong> ${params.checkInDate} at ${formatTime12h(params.checkInTime)}</li>
+              <li style="margin-bottom: 10px;"><strong>Check-out:</strong> ${params.checkOutDate} at ${formatTime12h(params.checkOutTime)}</li>
               <li style="margin-bottom: 10px;"><strong>Room:</strong> <span style="text-transform: capitalize;">${params.roomType}</span> Room</li>
               <li><strong>Guests:</strong> ${params.guests}</li>
             </ul>
           </div>
           
           <p style="color: #555555; line-height: 1.6;">
-            If you need to make any changes to your reservation or have special requests, please reply directly to this email or call our front desk.
+            If you require any assistance prior to your arrival, such as airport transfers or special requests, please reply directly to this email or contact our front desk.
           </p>
           
           <p style="color: #555555; line-height: 1.6; margin-bottom: 0;">
-            Warm regards,<br>
-            <strong>The Colonial Inn Team</strong>
+            Warmest regards,<br>
+            <strong>Management & Staff</strong><br>
+            Colonial Inn
           </p>
         </div>
         
@@ -112,25 +127,26 @@ export async function sendInquiryReceivedEmail(params: SendConfirmationParams) {
             Dear ${params.firstName} ${params.lastName},
           </p>
           <p style="color: #555555; line-height: 1.6;">
-            Thank you for your interest in staying at Colonial Inn. We have successfully received your reservation inquiry!
+            Thank you for considering Colonial Inn for your upcoming visit to Cebu. We have successfully received your reservation request.
           </p>
           <p style="color: #555555; line-height: 1.6; font-weight: bold;">
-            Please note: This is just an inquiry. Our staff will reach out to you within the day to confirm if the room is available for your requested dates.
+            Please note that this email acknowledges receipt of your inquiry. Our reservations team is currently reviewing our availability and will contact you shortly to officially confirm your booking.
           </p>
           
           <div style="background-color: #F8F5F2; padding: 20px; border-radius: 5px; margin: 25px 0;">
             <h3 style="margin-top: 0; color: #241A15; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Requested Details</h3>
             <ul style="list-style: none; padding: 0; margin: 0; color: #444;">
-              <li style="margin-bottom: 10px;"><strong>Check-in:</strong> ${params.checkInDate}</li>
-              <li style="margin-bottom: 10px;"><strong>Check-out:</strong> ${params.checkOutDate}</li>
+              <li style="margin-bottom: 10px;"><strong>Check-in:</strong> ${params.checkInDate} at ${formatTime12h(params.checkInTime)}</li>
+              <li style="margin-bottom: 10px;"><strong>Check-out:</strong> ${params.checkOutDate} at ${formatTime12h(params.checkOutTime)}</li>
               <li style="margin-bottom: 10px;"><strong>Room:</strong> <span style="text-transform: capitalize;">${params.roomType}</span> Room</li>
               <li><strong>Guests:</strong> ${params.guests}</li>
             </ul>
           </div>
           
           <p style="color: #555555; line-height: 1.6; margin-bottom: 0;">
-            Warm regards,<br>
-            <strong>The Colonial Inn Team</strong>
+            Warmest regards,<br>
+            <strong>Management & Staff</strong><br>
+            Colonial Inn
           </p>
         </div>
         
@@ -183,15 +199,19 @@ export async function sendUnavailableEmail(params: SendConfirmationParams) {
             Dear ${params.firstName} ${params.lastName},
           </p>
           <p style="color: #555555; line-height: 1.6;">
-            Thank you for your interest in staying with us. Unfortunately, we regret to inform you that our <strong>${params.roomType}</strong> rooms are fully booked for your requested dates (${params.checkInDate} to ${params.checkOutDate}).
+            Thank you for considering Colonial Inn. We sincerely appreciate your interest in our property.
           </p>
           <p style="color: #555555; line-height: 1.6;">
-            We apologize for the inconvenience. If your travel dates are flexible, please reply to this email or call our front desk, and we would be happy to help you find alternative dates for your stay!
+            We regret to inform you that we are fully booked and unable to accommodate your request for a <strong>${params.roomType}</strong> room during your selected dates (${params.checkInDate} ${formatTime12h(params.checkInTime)} to ${params.checkOutDate} ${formatTime12h(params.checkOutTime)}).
+          </p>
+          <p style="color: #555555; line-height: 1.6;">
+            Please accept our apologies for any inconvenience this may cause to your travel plans. Should your dates be flexible, our front desk team would be delighted to assist you in finding alternative availability. We hope to have the honor of welcoming you in the near future.
           </p>
           
           <p style="color: #555555; line-height: 1.6; margin-bottom: 0; margin-top: 30px;">
-            Warm regards,<br>
-            <strong>The Colonial Inn Team</strong>
+            Warmest regards,<br>
+            <strong>Management & Staff</strong><br>
+            Colonial Inn
           </p>
         </div>
         

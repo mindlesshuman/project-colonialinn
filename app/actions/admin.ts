@@ -18,7 +18,9 @@ export async function updateReservationStatus(id: string, newStatus: string) {
         firstName: reservation.firstName,
         lastName: reservation.lastName,
         checkInDate: reservation.checkInDate,
+        checkInTime: reservation.checkInTime,
         checkOutDate: reservation.checkOutDate,
+        checkOutTime: reservation.checkOutTime,
         roomType: reservation.roomType,
         guests: reservation.guests,
       });
@@ -28,7 +30,9 @@ export async function updateReservationStatus(id: string, newStatus: string) {
         firstName: reservation.firstName,
         lastName: reservation.lastName,
         checkInDate: reservation.checkInDate,
+        checkInTime: reservation.checkInTime,
         checkOutDate: reservation.checkOutDate,
+        checkOutTime: reservation.checkOutTime,
         roomType: reservation.roomType,
         guests: reservation.guests,
       });

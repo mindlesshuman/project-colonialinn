@@ -8,6 +8,15 @@ import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
+function formatTime12h(time24: string) {
+  if (!time24) return '';
+  const [hours, minutes] = time24.split(':');
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${minutes} ${ampm}`;
+}
+
 export default async function ManagerialDashboard() {
   const cookieStore = await cookies();
   const session = cookieStore.get('manager_session');
@@ -146,11 +155,11 @@ export default async function ManagerialDashboard() {
                       </td>
                       <td className="p-5">
                         <span className="block text-accent font-bold">{res.checkInDate}</span>
-                        <span className="block text-gray font-normal text-[0.75rem]">{res.checkInTime}</span>
+                        <span className="block text-gray font-normal text-[0.75rem]">{formatTime12h(res.checkInTime)}</span>
                       </td>
                       <td className="p-5">
                         <span className="block text-[#c0392b] font-bold">{res.checkOutDate}</span>
-                        <span className="block text-gray font-normal text-[0.75rem]">{res.checkOutTime}</span>
+                        <span className="block text-gray font-normal text-[0.75rem]">{formatTime12h(res.checkOutTime)}</span>
                       </td>
                       <td className="p-5">
                         <span className="block capitalize font-bold">{res.roomType} Room</span>
