@@ -16,30 +16,84 @@ export default function WalkInDashboard() {
   const [checkOutDate, setCheckOutDate] = useState('')
   const [checkOutTime, setCheckOutTime] = useState('12:00')
   const [roomType, setRoomType] = useState('Standard Room')
+  const [duration, setDuration] = useState('')
   const [guests, setGuests] = useState('1')
+  const [price, setPrice] = useState(0)
+  
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
 
-  // Initialize Session
+  // Set default date to today
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setCheckInDate(today);
+  }, []);
+
+  // Calculate checkout date/time and price when duration changes
+  useEffect(() => {
+    if (!roomType || !duration || !checkInDate || !checkInTime) {
+      setPrice(0);
+      setCheckOutDate("");
+      setCheckOutTime("");
+      return;
+    }
+
+    let p = 0;
+    const durNum = parseInt(duration);
+
+    if (roomType === "Standard Room") {
+      if (durNum === 3) p = 399;
+      if (durNum === 6) p = 499;
+      if (durNum === 10) p = 599;
+      if (durNum === 24) p = 1200;
+    } else if (roomType === "Family Room") {
+      if (durNum === 10) p = 1200;
+      if (durNum === 24) p = 2400;
+    }
+
+    setPrice(p);
+
+    const [year, month, day] = checkInDate.split('-').map(Number);
+    const [hours, minutes] = checkInTime.split(':').map(Number);
+    const dateObj = new Date(year, month - 1, day, hours, minutes);
+    
+    dateObj.setHours(dateObj.getHours() + durNum);
+
+    const outYear = dateObj.getFullYear();
+    const outMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const outDay = String(dateObj.getDate()).padStart(2, '0');
+    const outHours = String(dateObj.getHours()).padStart(2, '0');
+    const outMins = String(dateObj.getMinutes()).padStart(2, '0');
+
+    setCheckOutDate(`${outYear}-${outMonth}-${outDay}`);
+    setCheckOutTime(`${outHours}:${outMins}`);
+  }, [roomType, duration, checkInDate, checkInTime]);
+
+  // If roomType changes and the current duration is invalid for it, reset duration
+  useEffect(() => {
+    if (roomType === 'Family Room' && (duration === '3' || duration === '6')) {
+      setDuration('');
+    }
+  }, [roomType]);
+
   const initSession = async () => {
     setIsLoading(true)
     const res = await createWalkInSession()
     if (res.success && res.sessionId) {
       setSessionId(res.sessionId)
-      // We assume the app is hosted on standard port or vercel URL, using window.location.origin
       const url = `${window.location.origin}/walk-in/guest?session=${res.sessionId}`
       setQrUrl(url)
     }
     setIsLoading(false)
     setSessionData(null)
     setSuccessMsg('')
+    setDuration('')
   }
 
   useEffect(() => {
     initSession()
   }, [])
 
-  // Poll Session Status
   useEffect(() => {
     if (!sessionId) return
     const interval = setInterval(async () => {
@@ -50,14 +104,16 @@ export default function WalkInDashboard() {
           clearInterval(interval)
         }
       }
-    }, 3000) // poll every 3 seconds
-
+    }, 3000)
     return () => clearInterval(interval)
   }, [sessionId])
 
   const handleComplete = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!sessionId) return
+    if (!sessionId || !duration || price === 0) {
+      alert("Please ensure all fields including duration are selected.");
+      return;
+    }
     setIsSubmitting(true)
     const res = await completeWalkInReservation(sessionId, {
       checkInDate,
@@ -65,13 +121,16 @@ export default function WalkInDashboard() {
       checkOutDate,
       checkOutTime,
       roomType,
+      duration,
+      price,
       guests: parseInt(guests),
     })
 
     if (res.success) {
-      setSuccessMsg('Reservation successfully confirmed!')
+      const roomStr = res.assignedRoom ? ` - Assigned to Room ${res.assignedRoom}` : ''
+      setSuccessMsg(`Reservation successfully confirmed!${roomStr}`)
       setTimeout(() => {
-        initSession() // reset for next guest
+        initSession()
       }, 3000)
     } else {
       alert(res.error)
@@ -81,7 +140,6 @@ export default function WalkInDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex p-6 md:p-12 items-center justify-center relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/30 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 blur-[120px] rounded-full pointer-events-none" />
 
@@ -161,28 +219,62 @@ export default function WalkInDashboard() {
                     <input type="date" required value={checkInDate} onChange={e=>setCheckInDate(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-400">Check-out Date</label>
-                    <input type="date" required value={checkOutDate} onChange={e=>setCheckOutDate(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <label className="text-xs text-slate-400">Check-in Time</label>
+                    <input type="time" required value={checkInTime} onChange={e=>setCheckInTime(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs text-slate-400">Room Type</label>
-                  <select value={roomType} onChange={e=>setRoomType(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option className="bg-slate-800" value="Standard Room">Standard Room</option>
-                    <option className="bg-slate-800" value="Deluxe Room">Deluxe Room</option>
-                    <option className="bg-slate-800" value="Suite">Suite</option>
-                  </select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-400">Room Type</label>
+                    <select value={roomType} onChange={e=>setRoomType(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option className="bg-slate-800" value="Standard Room">Standard Room</option>
+                      <option className="bg-slate-800" value="Family Room">Family Room</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-400">Duration</label>
+                    <select required value={duration} onChange={e=>setDuration(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option className="bg-slate-800" value="">Select Duration</option>
+                      {roomType === "Standard Room" && (
+                        <>
+                          <option className="bg-slate-800" value="3">3 Hours (₱399)</option>
+                          <option className="bg-slate-800" value="6">6 Hours (₱499)</option>
+                        </>
+                      )}
+                      <option className="bg-slate-800" value="10">10 Hours ({roomType === 'Standard Room' ? '₱599' : '₱1,200'})</option>
+                      <option className="bg-slate-800" value="24">24 Hours ({roomType === 'Standard Room' ? '₱1,200' : '₱2,400'})</option>
+                    </select>
+                  </div>
                 </div>
+
+                {/* Read-only Checkout fields calculated from duration */}
+                {duration && (
+                  <div className="grid grid-cols-2 gap-4 opacity-50">
+                    <div className="space-y-1">
+                      <label className="text-xs text-slate-400">Auto Check-out Date</label>
+                      <input type="date" readOnly value={checkOutDate} className="w-full bg-black/10 border border-white/5 rounded-lg px-4 py-2 text-white cursor-not-allowed" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs text-slate-400">Auto Check-out Time</label>
+                      <input type="time" readOnly value={checkOutTime} className="w-full bg-black/10 border border-white/5 rounded-lg px-4 py-2 text-white cursor-not-allowed" />
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <label className="text-xs text-slate-400">Number of Guests</label>
                   <input type="number" min="1" required value={guests} onChange={e=>setGuests(e.target.value)} className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
+                <div className="mt-2 bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl flex justify-between items-center">
+                  <span className="text-blue-200">Total Price:</span>
+                  <span className="text-2xl font-bold text-white">₱{price.toLocaleString()}</span>
+                </div>
+
                 <button 
                   type="submit" 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !duration}
                   className="mt-auto w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:scale-100"
                 >
                   {isSubmitting ? 'Confirming...' : 'Confirm Walk-in & Collect Payment'}

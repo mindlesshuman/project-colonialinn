@@ -56,6 +56,8 @@ export async function completeWalkInReservation(
     checkOutDate: string
     checkOutTime: string
     roomType: string
+    duration: string
+    price: number
     guests: number
     message?: string
   }
@@ -82,11 +84,17 @@ export async function completeWalkInReservation(
         checkOutDate: reservationData.checkOutDate,
         checkOutTime: reservationData.checkOutTime,
         roomType: reservationData.roomType,
+        duration: reservationData.duration,
+        price: reservationData.price,
         guests: reservationData.guests,
         message: reservationData.message || 'Walk-in Guest',
         status: 'confirmed', // Assuming walk-in is immediately confirmed/paid
       },
     })
+
+    // Auto-assign the next available room of the selected type
+    const { autoAssignRoom } = await import('./room-actions')
+    const roomAssignment = await autoAssignRoom(reservation.id)
 
     // 3. Mark session as completed
     await prisma.walkInSession.update({
@@ -98,7 +106,11 @@ export async function completeWalkInReservation(
     revalidatePath('/manager')
     revalidatePath('/admin')
 
-    return { success: true, reservation }
+    return { 
+      success: true, 
+      reservationId: reservation.id,
+      assignedRoom: roomAssignment.success ? roomAssignment.roomNumber : null
+    }
   } catch (error) {
     console.error('Failed to complete walk-in reservation:', error)
     return { success: false, error: 'Failed to create reservation' }

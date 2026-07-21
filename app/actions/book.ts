@@ -17,6 +17,8 @@ export async function submitReservation(formData: FormData) {
       checkOutDate: formData.get('checkout') as string,
       checkOutTime: formData.get('checkoutTime') as string,
       roomType: formData.get('room') as string,
+      duration: formData.get('duration') as string,
+      price: parseFloat(formData.get('price') as string) || 0,
       guests: parseInt(formData.get('guests') as string, 10),
       message: formData.get('message') as string,
     };
